@@ -18,6 +18,14 @@ const getUsers = async (request, response) => {
   response.json(users.map((u) => u.toJSON()));
 };
 
+const getUser = async (request, response) => {
+  const user = await User.findById(request.params.id).populate('microposts', {
+    content: 1,
+    date: 1,
+  });
+  response.json(user.toJSON());
+};
+
 const createUser = async (request, response) => {
   const body = request.body;
 
@@ -64,6 +72,7 @@ const updateUserAdmin = async (request, response) => {
 
 module.exports = {
   getUsers,
+  getUser,
   createUser,
   updateUserAdmin,
 };
