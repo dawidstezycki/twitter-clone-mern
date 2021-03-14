@@ -1,10 +1,11 @@
 import React from 'react'
 
-const ProfilePreview = ({username}) => {
+const ProfilePreview = ({username, followingCount, followersCount}) => {
   return (
     <div>
       <h5>{username}</h5>
-      <div>Followers: 50 Following: 100</div>
+      <div>Followers: {followersCount}</div>
+      <div>Following: {followingCount}</div>
     </div>
   );
 };

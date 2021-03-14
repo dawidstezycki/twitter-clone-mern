@@ -1,6 +1,5 @@
 import micropostService from '../services/microposts';
 
-
 const micropostReducer = (state = [], action) => {
   switch (action.type) {
     case 'NEW_MICROPOST':

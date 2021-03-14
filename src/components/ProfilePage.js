@@ -7,6 +7,10 @@ import {
   setViewedUser,
   setViewedUserToNull,
 } from '../reducers/viewedUserReducer';
+import {
+  getViewedUserRelationships,
+  setViewedUserRelationshipsToEmpty,
+} from '../reducers/viewedUserRelationshipReducer';
 
 const ProfilePage = () => {
   const viewedUserId = useParams().id;
@@ -21,11 +25,19 @@ const ProfilePage = () => {
     }
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(getViewedUserRelationships(viewedUserId));
+    
+    return () => {
+      dispatch(setViewedUserRelationshipsToEmpty());
+    }
+  }, [dispatch]);
+
   return (
     viewedUser && (
       <div className="container">
         <div className="row">
-          <ProfileSidebar username={viewedUser.username} />
+          <ProfileSidebar />
           <MicropostFeed microposts={viewedUser.microposts} />
         </div>
       </div>

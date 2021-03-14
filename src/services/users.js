@@ -13,4 +13,29 @@ const getUser = async (userid) => {
   return response.data
 }
 
-export default { getUser }
+const updateUserAdmin = async (userid, admin) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const object = {
+    admin
+  };
+  const response = await axios.put(`${baseUrl}/${userid}`, object, config)
+  return response.data
+}
+
+const updateUserRelationship = async (userid, relationships) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const object = {
+    relationships
+  };
+  
+  const response = await axios.put(`${baseUrl}/${userid}`, object, config)
+  return response.data
+}
+
+export default { getUser, updateUserAdmin, updateUserRelationship, setToken }

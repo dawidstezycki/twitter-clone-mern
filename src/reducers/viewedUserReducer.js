@@ -5,28 +5,27 @@ const viewedUserReducer = (state = null, action) => {
     case 'SET_VIEWED_USER':
       return action.data;
     default:
-        return state;
+      return state;
   }
 };
 
 export const setViewedUser = (userid) => {
-  return async dispatch => {
+  return async (dispatch) => {
     const user = await userService.getUser(userid);
     dispatch({
-      type: "SET_VIEWED_USER",
+      type: 'SET_VIEWED_USER',
       data: user,
-    })
-  }
-}
+    });
+  };
+};
 
 export const setViewedUserToNull = () => {
-  return async dispatch => {
-    console.log(`DUAPASSDASDASDSAD`)
+  return async (dispatch) => {
     dispatch({
-      type: "SET_VIEWED_USER",
+      type: 'SET_VIEWED_USER',
       data: null,
-    })
-  }
-}
+    });
+  };
+};
 
 export default viewedUserReducer;
