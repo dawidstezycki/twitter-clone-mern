@@ -8,6 +8,7 @@ const config = require('./utils/config');
 const userRouter = require('./components/user/userRouter');
 const micropostRouter = require('./components/micropost/micropostRouter');
 const loginRouter = require('./components/user/loginRouter');
+const relationshipRouter = require('./components/relationship/relationshipRouter');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(middleware.requestLogger);
 
 app.use('/api/users', userRouter);
 app.use('/api/microposts', micropostRouter);
+app.use('/api/relationships', relationshipRouter);
 app.use('/api/login', loginRouter);
 
 app.use(middleware.unknownEndpoint);

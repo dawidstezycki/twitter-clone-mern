@@ -19,10 +19,32 @@ const getUsers = async (request, response) => {
 };
 
 const getUser = async (request, response) => {
-  const user = await User.findById(request.params.id).populate('microposts', {
-    content: 1,
-    date: 1,
-  });
+  const user = await User.findById(request.params.id).populate([{
+    path: 'microposts',
+    model: 'Micropost',
+    populate: {
+      path: 'user',
+      model: 'User',
+      select: { username: 1, id: 1 },
+    },
+  },
+  {
+    path: 'relationships',
+    model: 'Relationship',
+    populate: [
+      {
+        path: 'follower',
+        model: 'User',
+        select: { username: 1 },
+      },
+      {
+        path: 'followed',
+        model: 'User',
+        select: { username: 1 },
+      },
+    ]
+  }
+]);
   response.json(user.toJSON());
 };
 
@@ -43,7 +65,7 @@ const createUser = async (request, response) => {
   response.json(savedUser);
 };
 
-const updateUserAdmin = async (request, response) => {
+const updateUser = async (request, response) => {
   const body = request.body;
   const token = getToken(request);
   const decodedToken = jwt.verify(token, process.env.SECRET);
@@ -54,19 +76,29 @@ const updateUserAdmin = async (request, response) => {
 
   const user = await User.findById(decodedToken.id);
 
-  if (user.admin) {
-    const userToUpdate = {
-      admin: body.admin,
+  const userToUpdate = await User.findById(request.params.id);
+  const isUserSameAsToUpdate = userToUpdate.id.toString() === user.id;
+
+  if (user.admin || isUserSameAsToUpdate) {
+    const newUserObject = {
+      relationships: body.relationships,
     };
+
+    if (body.admin) {
+      if (user.admin) {
+        newUserObject.admin = body.admin;
+      } else {
+        return response.status(401).json({ error: 'unauthorized user' });
+      }
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       request.params.id,
-      userToUpdate,
+      newUserObject,
       { new: true }
     );
     return response.json(updatedUser.toJSON());
   }
-
   return response.status(401).json({ error: 'unauthorized user' });
 };
 
@@ -74,5 +106,5 @@ module.exports = {
   getUsers,
   getUser,
   createUser,
-  updateUserAdmin,
+  updateUser,
 };

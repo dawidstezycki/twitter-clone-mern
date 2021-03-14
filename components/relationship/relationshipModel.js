@@ -12,6 +12,8 @@ const relationshipSchema = new mongoose.Schema({
   },
 });
 
+relationshipSchema.index({follower: 1, followed: 1}, {unique: true})
+
 relationshipSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();

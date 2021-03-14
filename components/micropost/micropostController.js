@@ -58,14 +58,15 @@ const deleteMicropost = async (request, response) => {
   }
 
   const user = await User.findById(decodedToken.id);
+  const micropostToRemove = await Micropost.findById(request.params.id);
+  const isUserSameAsAuthor = micropostToRemove.user.toString() === user.id;
 
-  // TODO: add deleting by author
-  if (user.admin) {
+  if (user.admin || isUserSameAsAuthor) {
     await Micropost.findByIdAndRemove(request.params.id);
     response.status(204).end();
+  } else {
+    return response.status(401).json({ error: 'unauthorized user' });
   }
-
-  return response.status(401).json({ error: 'unauthorized user' });
 };
 
 module.exports = {
