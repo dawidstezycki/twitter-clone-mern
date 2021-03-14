@@ -1,27 +1,22 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-const Navigation = ({handleLogout}) => {
+const Navigation = ({ handleLogout }) => {
   const isUserLoggedIn = useSelector((state) => {
     return state.user ? true : false;
   });
   return (
     <nav>
       <div className="container nav-wrapper">
-        <a href="#" className="brand-logo left">
+        <Link to="/" className="brand-logo left">
           Twitter
-        </a>
+        </Link>
         <ul className="right">
-          <li>
-            <a>Home</a>
-          </li>
-          <li>
-            <a>Users</a>
-          </li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/users">Users</Link></li>
           {isUserLoggedIn && (
-            <li>
-              <a onClick={handleLogout}>Log out</a>
-            </li>
+            <li><a onClick={handleLogout}>Log out</a></li>
           )}
         </ul>
       </div>

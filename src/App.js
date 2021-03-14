@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import Navigation from './components/Navigation';
-import MicropostFeed from './components/MicropostFeed';
-import Sidebar from './components/Sidebar';
-import LoginForm from './components/LoginForm';
-import { getMicroposts } from './reducers/micropostReducer';
+import HomePage from './components/HomePage';
+import LoginPage from './components/LoginPage';
+import ProfilePage from './components/ProfilePage';
+
 import { setUser } from './reducers/userReducer';
 import loginService from './services/login';
 import micropostService from './services/microposts';
 import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
-  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedTwitterUser');
@@ -22,10 +24,6 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    dispatch(getMicroposts());
-  }, [dispatch]);
-
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
@@ -33,36 +31,33 @@ const App = () => {
         login: event.target.login.value,
         password: event.target.password.value,
       });
-      window.localStorage.setItem(
-        'loggedTwitterUser', JSON.stringify(user)
-      )
+      window.localStorage.setItem('loggedTwitterUser', JSON.stringify(user));
       dispatch(setUser(user));
       micropostService.setToken(user.token);
+      history.push('/');
     } catch (exception) {}
   };
 
   const handleLogout = async (event) => {
-    window.localStorage.removeItem(
-      'loggedTwitterUser'
-    )
+    window.localStorage.removeItem('loggedTwitterUser');
     dispatch(setUser(null));
     micropostService.setToken(null);
-    
   };
 
   return (
     <div className="App">
-      <Navigation handleLogout={handleLogout}/>
-      <div className="container">
-        {user ? (
-          <div className="row">
-            <Sidebar />
-            <MicropostFeed />
-          </div>
-        ) : (
-          <LoginForm handleLogin={handleLogin}/>
-        )}
-      </div>
+      <Navigation handleLogout={handleLogout} />
+      <Switch>
+        <Route path="/users/:id">
+          {/* <ProfilePage/> */}
+          {user ? <ProfilePage /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/login">
+          <LoginPage handleLogin={handleLogin} />
+        </Route>
+        {/* <HomePage/> */}
+        <Route path="/">{user ? <HomePage /> : <Redirect to="/login" />}</Route>
+      </Switch>
     </div>
   );
 };
