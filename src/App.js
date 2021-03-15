@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
-import Navigation from './components/Navigation';
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
 import ProfilePage from './components/ProfilePage';
 import UsersPage from './components/UsersPage';
-import { setUser } from './reducers/userReducer';
+import Navigation from './components/Navigation';
 import loginService from './services/login';
 import micropostService from './services/microposts';
 import userService from './services/users';
 import relationshipService from './services/relationships';
-import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from './reducers/userReducer';
 import { getUserRelationships } from './reducers/relationshipReducer';
 
 const App = () => {

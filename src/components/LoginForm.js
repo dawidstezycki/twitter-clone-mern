@@ -12,6 +12,7 @@ const LoginForm = ({ handleLogin }) => {
             <div className="input-field">
               <i className="material-icons prefix">mail</i>
               <input
+                type="text"
                 id="login"
                 className="validate"
                 name="login"
@@ -25,8 +26,8 @@ const LoginForm = ({ handleLogin }) => {
                 type="password"
                 id="password"
                 className="materialize-textarea"
-                required
                 name="password"
+                required
               ></input>
               <label htmlFor="password">Password</label>
             </div>
