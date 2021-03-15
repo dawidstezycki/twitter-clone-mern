@@ -7,7 +7,14 @@ import { getUserRelationships } from '../reducers/relationshipReducer';
 
 const HomePage = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user)
+  const followedUsers = useSelector((state)=>state.relationships.map((relationship)=>relationship.followed.id))
+  const micropostsByFollowedUsers = useSelector((state) => {
+    return state.microposts.filter((micropost)=>{
+      return followedUsers.includes(micropost.user.id) || (micropost.user.id == user.id)
+    })
+  });
+  
   const microposts = useSelector((state) => state.microposts);
 
   useEffect(() => {
@@ -23,7 +30,7 @@ const HomePage = () => {
       <div className="container">
         <div className="row">
           <Sidebar />
-          <MicropostFeed microposts={microposts} />
+          {micropostsByFollowedUsers && <MicropostFeed microposts={micropostsByFollowedUsers} />}
         </div>
       </div>
     )

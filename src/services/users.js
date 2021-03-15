@@ -8,6 +8,11 @@ const setToken = (newToken) => {
   token = `bearer ${newToken}`
 }
 
+const getUsers = async () => {
+  const response = await axios.get(baseUrl)
+  return response.data
+}
+
 const getUser = async (userid) => {
   const response = await axios.get(`${baseUrl}/${userid}`)
   return response.data
@@ -38,4 +43,4 @@ const updateUserRelationship = async (userid, relationships) => {
   return response.data
 }
 
-export default { getUser, updateUserAdmin, updateUserRelationship, setToken }
+export default { getUser, getUsers, updateUserAdmin, updateUserRelationship, setToken }

@@ -81,11 +81,11 @@ const ProfileSidebar = () => {
 
   return (
     <div className="col s3">
-      <ProfilePreview
+      {followingUsers && followerUsers && <ProfilePreview
         username={viewedUser.username}
         followingCount={followingUsers.length}
         followersCount={followerUsers.length}
-      />
+      />}
       {!isViewedUserSameAsLogged() && followButton()}
     </div>
   );

@@ -4,6 +4,7 @@ import Navigation from './components/Navigation';
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
 import ProfilePage from './components/ProfilePage';
+import UsersPage from './components/UsersPage';
 import { setUser } from './reducers/userReducer';
 import loginService from './services/login';
 import micropostService from './services/microposts';
@@ -57,6 +58,9 @@ const App = () => {
       <Switch>
         <Route path="/users/:id">
           {user ? <ProfilePage /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/users">
+          {user ? <UsersPage /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           <LoginPage handleLogin={handleLogin} />

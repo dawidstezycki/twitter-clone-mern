@@ -14,6 +14,7 @@ import {
 
 const ProfilePage = () => {
   const viewedUserId = useParams().id;
+  
   const dispatch = useDispatch();
   const viewedUser = useSelector((state) => state.viewedUser);
 
