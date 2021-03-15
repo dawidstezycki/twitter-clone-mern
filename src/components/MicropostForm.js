@@ -1,23 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createMicropost } from '../reducers/micropostReducer';
-import { setContent } from '../reducers/newPostReducer';
 
 const MicropostForm = () => {
   const dispatch = useDispatch();
-  const currentContent = useSelector(state=>state.newPost);
+  const [currentContent, setCurrentContent] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const noteToSubmit = currentContent;
     dispatch(createMicropost(noteToSubmit));
-    dispatch(setContent(""))
+    setCurrentContent('');
   };
 
-  const handleChange = (event) =>
-  {
-    dispatch(setContent(event.target.value));
-  }
+  const handleChange = (event) => {
+    setCurrentContent(event.target.value);
+  };
 
   return (
     <div>
