@@ -1,6 +1,6 @@
 import userService from '../services/users';
 
-const viewedUserRelationshipReducer = (state = [], action) => {
+const viewedUserRelationshipReducer = (state = null, action) => {
   switch (action.type) {
     case 'ADD_VIEWED_USER_RELATIONSHIP':
       return [...state, action.data];
@@ -26,11 +26,11 @@ export const getViewedUserRelationships = (userid) => {
   };
 };
 
-export const setViewedUserRelationshipsToEmpty = () => {
+export const setViewedUserRelationshipsToNull = () => {
   return async (dispatch) => {
     dispatch({
       type: 'SET_VIEWED_USER_RELATIONSHIPS',
-      data: [],
+      data: null,
     });
   };
 };

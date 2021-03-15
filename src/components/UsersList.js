@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const UserItem = ({user}) => {
+const UserItem = ({ user }) => {
   return (
     <h5>
-        <Link className="black-text" to={`/users/${user.id}`}>
-          {user.username}
-        </Link>
-      </h5>
+      <Link className="black-text" to={`/users/${user.id}`}>
+        {user.username}
+      </Link>
+    </h5>
   );
-}
+};
 
 const UsersList = ({ users }) => {
   return (

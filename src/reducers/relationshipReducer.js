@@ -1,7 +1,7 @@
 import userService from '../services/users';
 import relationshipService from '../services/relationships';
 
-const relationshipReducer = (state = [], action) => {
+const relationshipReducer = (state = null, action) => {
   switch (action.type) {
     case 'ADD_RELATIONSHIP':
       return [...state, action.data];

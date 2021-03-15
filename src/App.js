@@ -11,9 +11,11 @@ import micropostService from './services/microposts';
 import userService from './services/users';
 import relationshipService from './services/relationships';
 import { useDispatch, useSelector } from 'react-redux';
+import { getUserRelationships } from './reducers/relationshipReducer';
 
 const App = () => {
   const user = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -27,6 +29,12 @@ const App = () => {
       relationshipService.setToken(loggedUser.token);
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getUserRelationships(user.id));
+    }
+  }, [user]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -57,16 +65,17 @@ const App = () => {
       <Navigation handleLogout={handleLogout} />
       <Switch>
         <Route path="/users/:id">
-          {user ? <ProfilePage /> : <Redirect to="/login" />}
+        {window.localStorage.getItem('loggedTwitterUser') ? <ProfilePage/> : <Redirect to="/login" />}
         </Route>
         <Route path="/users">
-          {user ? <UsersPage /> : <Redirect to="/login" />}
+        {window.localStorage.getItem('loggedTwitterUser') ? <UsersPage /> : <Redirect to="/login" />}
         </Route>
         <Route path="/login">
           <LoginPage handleLogin={handleLogin} />
         </Route>
-        {/* <HomePage/> */}
-        <Route path="/">{user ? <HomePage /> : <Redirect to="/login" />}</Route>
+        <Route path="/">
+        {window.localStorage.getItem('loggedTwitterUser') ? <HomePage /> : <Redirect to="/login" />}
+        </Route>
       </Switch>
     </div>
   );

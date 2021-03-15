@@ -18,9 +18,13 @@ const ProfileSidebar = () => {
   const user = useSelector((state) => state.user);
 
   const relationshipWithViewedUser = useSelector((state) => {
-    return state.relationships.find(
-      (relationship) => relationship.followed.id === state.viewedUser.id
-    );
+    if (state.relationships){
+      return state.relationships.find(
+        (relationship) => relationship.followed.id === state.viewedUser.id
+      );
+    } else {
+      return null
+    }
   });
 
   const followingUsers = useSelector((state) => {
@@ -81,11 +85,11 @@ const ProfileSidebar = () => {
 
   return (
     <div className="col s3">
-      {followingUsers && followerUsers && <ProfilePreview
+      <ProfilePreview
         username={viewedUser.username}
         followingCount={followingUsers.length}
         followersCount={followerUsers.length}
-      />}
+      />
       {!isViewedUserSameAsLogged() && followButton()}
     </div>
   );
