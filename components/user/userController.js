@@ -84,7 +84,7 @@ const updateUser = async (request, response) => {
       relationships: body.relationships,
     };
 
-    if (body.admin) {
+    if (body.admin != null) {
       if (user.admin) {
         newUserObject.admin = body.admin;
       } else {
