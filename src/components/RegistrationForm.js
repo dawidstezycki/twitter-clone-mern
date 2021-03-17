@@ -1,25 +1,35 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-const LoginForm = ({ handleLogin }) => {
+const RegistrationForm = ({ handleRegistration }) => {
   return (
     <div className="row">
       <div className="col s6 offset-s3">
         <div className="card-panel">
           <div className="section">
-            <h4 className="center">Login</h4>
+            <h4 className="center">Registration</h4>
           </div>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleRegistration}>
             <div className="input-field">
               <i className="material-icons prefix">account_box</i>
               <input
                 type="text"
-                id="login"
+                id="username"
                 className="validate"
-                name="login"
+                name="username"
                 required
               ></input>
-              <label htmlFor="login">Username</label>
+              <label htmlFor="username">Username</label>
+            </div>
+            <div className="input-field">
+              <i className="material-icons prefix">mail</i>
+              <input
+                type="text"
+                id="email"
+                className="validate"
+                name="email"
+                required
+              ></input>
+              <label htmlFor="email">E-mail</label>
             </div>
             <div className="input-field">
               <i className="material-icons prefix">password</i>
@@ -34,17 +44,14 @@ const LoginForm = ({ handleLogin }) => {
             </div>
             <div className="right-align">
               <button className="btn waves-effect waves-light " type="submit">
-                Login
+                Register Now
               </button>
             </div>
           </form>
-        </div>
-        <div className="center section">
-        <Link to="/registration">Create account</Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default LoginForm;
+export default RegistrationForm;

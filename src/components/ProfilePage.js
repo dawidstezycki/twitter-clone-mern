@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import MicropostFeed from './MicropostFeed';
 import ProfileSidebar from './ProfileSidebar';
 import { useDispatch, useSelector } from 'react-redux';

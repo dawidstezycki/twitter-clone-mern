@@ -54,7 +54,9 @@ const ProfileSidebar = () => {
     user
   ) => {
     return async (dispatch) => {
+      console.log(`DUPA ${relationshipWithViewedUser.id}`)
       dispatch(deleteViewedUserRelationship(user));
+      console.log(`DUPA ${relationshipWithViewedUser.id}`)
       dispatch(deleteRelationship(relationshipWithViewedUser.id));
     };
   };
@@ -64,6 +66,7 @@ const ProfileSidebar = () => {
   };
 
   const handleUnfollowClick = () => {
+    console.log(`DUPA ${relationshipWithViewedUser.id}`)
     dispatch(deleteRelationshipFromBothUsers(relationshipWithViewedUser, user));
   };
 

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import LoginPage from './components/LoginPage';
+import RegistrationPage from './components/RegistrationPage';
 import ProfilePage from './components/ProfilePage';
 import UsersPage from './components/UsersPage';
 import Navigation from './components/Navigation';
@@ -34,7 +35,7 @@ const App = () => {
     if (user) {
       dispatch(getUserRelationships(user.id));
     }
-  }, [user]);
+  }, [user, dispatch]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -72,6 +73,9 @@ const App = () => {
         </Route>
         <Route path="/login">
           <LoginPage handleLogin={handleLogin} />
+        </Route>
+        <Route path="/registration">
+        {window.localStorage.getItem('loggedTwitterUser') ? <Redirect to="/" /> : <RegistrationPage/>}
         </Route>
         <Route path="/">
         {window.localStorage.getItem('loggedTwitterUser') ? <HomePage /> : <Redirect to="/login" />}

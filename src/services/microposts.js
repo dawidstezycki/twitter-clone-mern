@@ -8,12 +8,12 @@ const setToken = (newToken) => {
   token = `bearer ${newToken}`
 }
 
-const getAll = async () => {
+const getMicroposts = async () => {
   const response = await axios.get(baseUrl)
   return response.data
 }
 
-const create = async content => {
+const createMicropost = async content => {
   const config = {
     headers: {Authorization: token},
   }
@@ -24,4 +24,4 @@ const create = async content => {
   return response.data
 }
 
-export default {getAll, setToken, create}
+export default {getMicroposts, setToken, createMicropost}

@@ -15,9 +15,9 @@ const Navigation = ({ handleLogout }) => {
         <ul className="right">
           <li><Link to="/">Home</Link></li>
           <li><Link to="/users">Users</Link></li>
-          {isUserLoggedIn && (
-            <li><a onClick={handleLogout}>Log out</a></li>
-          )}
+          <li>{isUserLoggedIn ? 
+            <a onClick={handleLogout}>Log out</a> : <Link to="/login">Log in</Link>
+          }</li>
         </ul>
       </div>
     </nav>

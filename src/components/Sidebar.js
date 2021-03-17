@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import ProfilePreview from './ProfilePreview';
 import MicropostForm from './MicropostForm';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const Sidebar = () => {
   const user = useSelector((state) => state.user);

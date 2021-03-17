@@ -30,4 +30,9 @@ const updateUserAdmin = async (userid, admin) => {
   return response.data
 }
 
-export default { getUser, getUsers, updateUserAdmin, setToken }
+const createUser = async (userData) => {
+  const response = await axios.post(`${baseUrl}`, userData)
+  return response.data
+}
+
+export default { getUser, getUsers, createUser, updateUserAdmin, setToken }

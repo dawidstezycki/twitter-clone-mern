@@ -1,6 +1,5 @@
 import React from 'react';
 import Micropost from './Micropost';
-import { useSelector } from 'react-redux';
 
 const MicropostFeed = ({ microposts }) => {
   return (

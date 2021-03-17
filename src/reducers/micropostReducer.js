@@ -13,7 +13,7 @@ const micropostReducer = (state = [], action) => {
 
 export const getMicroposts = () => {
   return async dispatch => {
-    const microposts = await micropostService.getAll()
+    const microposts = await micropostService.getMicroposts()
     microposts.reverse()
     dispatch({
       type: "SET_MICROPOSTS",
@@ -34,7 +34,7 @@ export const setMicroposts = (microposts) => {
 
 export const createMicropost = (content) => {
   return async dispatch => {
-    const newMicropost = await micropostService.create(content)
+    const newMicropost = await micropostService.createMicropost(content)
     dispatch({
       type: "NEW_MICROPOST",
       data: newMicropost,
