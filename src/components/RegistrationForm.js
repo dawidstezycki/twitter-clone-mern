@@ -4,6 +4,7 @@ const RegistrationForm = ({ handleRegistration }) => {
   return (
     <div className="row">
       <div className="col s6 offset-s3">
+        <div className="section">
         <div className="card-panel">
           <div className="section">
             <h4 className="center">Registration</h4>
@@ -48,6 +49,7 @@ const RegistrationForm = ({ handleRegistration }) => {
               </button>
             </div>
           </form>
+        </div>
         </div>
       </div>
     </div>

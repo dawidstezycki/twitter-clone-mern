@@ -25,12 +25,12 @@ const HomePage = () => {
   }, [dispatch]);
 
   return (
-    loggedUser && (
+    loggedUser && loggedUserRelationships && (
       <div className="container">
-        {loggedUserRelationships && <div className="row">
+         <div className="row">
           <Sidebar />
           <MicropostFeed microposts={micropostsByFollowedUsers} />
-        </div>}
+        </div>
       </div>
     )
   );

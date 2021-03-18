@@ -5,6 +5,7 @@ const LoginForm = ({ handleLogin }) => {
   return (
     <div className="row">
       <div className="col s6 offset-s3">
+        <div className="section">
         <div className="card-panel">
           <div className="section">
             <h4 className="center">Login</h4>
@@ -33,14 +34,17 @@ const LoginForm = ({ handleLogin }) => {
               <label htmlFor="password">Password</label>
             </div>
             <div className="right-align">
-              <button className="btn waves-effect waves-light " type="submit">
+              <button className="btn waves-effect waves-light" type="submit">
                 Login
               </button>
             </div>
           </form>
         </div>
-        <div className="center section">
-        <Link to="/registration">Create account</Link>
+        </div>
+        <div className="section">
+          <div className="center">
+            <Link to="/registration">Create account</Link>
+          </div>
         </div>
       </div>
     </div>
