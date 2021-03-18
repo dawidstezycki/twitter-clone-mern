@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3001/api/microposts'
+const baseUrl = '/api/microposts'
 
 let token = null
 
