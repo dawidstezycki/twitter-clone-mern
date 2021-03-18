@@ -99,7 +99,6 @@ const deleteRelationship = async (request, response) => {
   const userFollowed = await User.findById(relationshipToRemove.followed._id);
 
   const isUserSameAsFollower = user._id.toString() === userFollowing._id.toString();
-  console.log(`${user._id} ${userFollowing._id} ${isUserSameAsFollower}`);
 
   if (user.admin || isUserSameAsFollower) {
     await Relationship.findByIdAndRemove(request.params.id);
