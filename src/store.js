@@ -4,17 +4,17 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 
 import micropostReducer from './reducers/micropostReducer'
 import usersReducer from './reducers/usersReducer'
-import userReducer from './reducers/userReducer'
+import loggedUserReducer from './reducers/loggedUserReducer'
 import viewedUserReducer from './reducers/viewedUserReducer'
-import relationshipReducer from './reducers/relationshipReducer'
+import loggedUserRelationshipReducer from './reducers/loggedUserRelationshipReducer'
 import viewedUserRelationshipReducer from './reducers/viewedUserRelationshipReducer'
 
 const reducer = combineReducers({
   microposts: micropostReducer,
   users: usersReducer,
-  user: userReducer,
+  loggedUser: loggedUserReducer,
   viewedUser: viewedUserReducer,
-  relationships: relationshipReducer,
+  loggedUserRelationships: loggedUserRelationshipReducer,
   viewedUserRelationships: viewedUserRelationshipReducer,
 })
 

@@ -7,16 +7,16 @@ import { getMicroposts } from '../reducers/micropostReducer';
 const HomePage = () => {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user)
-  const relationships = useSelector((state) => state.relationships);
+  const loggedUser = useSelector((state) => state.loggedUser)
+  const loggedUserRelationships = useSelector((state) => state.loggedUserRelationships);
   const micropostsByFollowedUsers = useSelector((state) => {
     let followedUsers = []
-    if (state.relationships)
+    if (state.loggedUserRelationships)
     {
-      followedUsers = state.relationships.map((relationship)=>relationship.followed.id);
+      followedUsers = state.loggedUserRelationships.map((relationship)=>relationship.followed.id);
     }
     return state.microposts.filter((micropost)=>{
-      return followedUsers.includes(micropost.user.id) || (micropost.user.id === user.id)
+      return followedUsers.includes(micropost.user.id) || (micropost.user.id === loggedUser.id)
     })
   });
 
@@ -25,9 +25,9 @@ const HomePage = () => {
   }, [dispatch]);
 
   return (
-    user && (
+    loggedUser && (
       <div className="container">
-        {relationships && <div className="row">
+        {loggedUserRelationships && <div className="row">
           <Sidebar />
           <MicropostFeed microposts={micropostsByFollowedUsers} />
         </div>}

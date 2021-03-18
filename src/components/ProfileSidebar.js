@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  addRelationship,
-  deleteRelationship,
-} from '../reducers/relationshipReducer';
+  addLoggedUserRelationship,
+  deleteLoggedUserRelationship,
+} from '../reducers/loggedUserRelationshipReducer';
 import {
   addViewedUserRelationship,
   deleteViewedUserRelationship,
@@ -15,11 +15,11 @@ const ProfileSidebar = () => {
   const dispatch = useDispatch();
 
   const viewedUser = useSelector((state) => state.viewedUser);
-  const user = useSelector((state) => state.user);
+  const loggedUser = useSelector((state) => state.loggedUser);
 
   const relationshipWithViewedUser = useSelector((state) => {
-    if (state.relationships){
-      return state.relationships.find(
+    if (state.loggedUserRelationships){
+      return state.loggedUserRelationships.find(
         (relationship) => relationship.followed.id === state.viewedUser.id
       );
     } else {
@@ -39,35 +39,32 @@ const ProfileSidebar = () => {
   });
 
   const isViewedUserSameAsLogged = () => {
-    return viewedUser.id === user.id;
+    return viewedUser.id === loggedUser.id;
   };
 
-  const addRelationshipToBothUsers = (viewedUser, user) => {
+  const addLoggedUserRelationshipToBothUsers = (viewedUser, loggedUser) => {
     return async (dispatch) => {
-      dispatch(addViewedUserRelationship(user, viewedUser));
-      dispatch(addRelationship(viewedUser.id));
+      dispatch(addViewedUserRelationship(loggedUser, viewedUser));
+      dispatch(addLoggedUserRelationship(viewedUser.id));
     };
   };
 
-  const deleteRelationshipFromBothUsers = (
+  const deleteLoggedUserRelationshipFromBothUsers = (
     relationshipWithViewedUser,
-    user
+    loggedUser
   ) => {
     return async (dispatch) => {
-      console.log(`DUPA ${relationshipWithViewedUser.id}`)
-      dispatch(deleteViewedUserRelationship(user));
-      console.log(`DUPA ${relationshipWithViewedUser.id}`)
-      dispatch(deleteRelationship(relationshipWithViewedUser.id));
+      dispatch(deleteViewedUserRelationship(loggedUser));
+      dispatch(deleteLoggedUserRelationship(relationshipWithViewedUser.id));
     };
   };
 
   const handleFollowClick = () => {
-    dispatch(addRelationshipToBothUsers(viewedUser, user));
+    dispatch(addLoggedUserRelationshipToBothUsers(viewedUser, loggedUser));
   };
 
   const handleUnfollowClick = () => {
-    console.log(`DUPA ${relationshipWithViewedUser.id}`)
-    dispatch(deleteRelationshipFromBothUsers(relationshipWithViewedUser, user));
+    dispatch(deleteLoggedUserRelationshipFromBothUsers(relationshipWithViewedUser, loggedUser));
   };
 
   const followButton = () => {

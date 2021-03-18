@@ -11,11 +11,11 @@ import loginService from './services/login';
 import micropostService from './services/microposts';
 import userService from './services/users';
 import relationshipService from './services/relationships';
-import { setUser } from './reducers/userReducer';
-import { getUserRelationships } from './reducers/relationshipReducer';
+import { setLoggedUser } from './reducers/loggedUserReducer';
+import { getLoggedUserRelationships } from './reducers/loggedUserRelationshipReducer';
 
 const App = () => {
-  const user = useSelector((state) => state.user);
+  const loggedUser = useSelector((state) => state.loggedUser);
 
   const dispatch = useDispatch();
   const history = useHistory();
@@ -23,39 +23,39 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedTwitterUser');
     if (loggedUserJSON) {
-      const loggedUser = JSON.parse(loggedUserJSON);
-      dispatch(setUser(loggedUser));
-      micropostService.setToken(loggedUser.token);
-      userService.setToken(loggedUser.token);
-      relationshipService.setToken(loggedUser.token);
+      const loggedUserParsed = JSON.parse(loggedUserJSON);
+      dispatch(setLoggedUser(loggedUserParsed));
+      micropostService.setToken(loggedUserParsed.token);
+      userService.setToken(loggedUserParsed.token);
+      relationshipService.setToken(loggedUserParsed.token);
     }
   }, [dispatch]);
 
   useEffect(() => {
-    if (user) {
-      dispatch(getUserRelationships(user.id));
+    if (loggedUser) {
+      dispatch(getLoggedUserRelationships(loggedUser.id));
     }
-  }, [user, dispatch]);
+  }, [loggedUser, dispatch]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const user = await loginService.login({
+      const loggedUser = await loginService.login({
         login: event.target.login.value,
         password: event.target.password.value,
       });
-      window.localStorage.setItem('loggedTwitterUser', JSON.stringify(user));
-      dispatch(setUser(user));
-      micropostService.setToken(user.token);
-      userService.setToken(user.token);
-      relationshipService.setToken(user.token);
+      window.localStorage.setItem('loggedTwitterUser', JSON.stringify(loggedUser));
+      dispatch(setLoggedUser(loggedUser));
+      micropostService.setToken(loggedUser.token);
+      userService.setToken(loggedUser.token);
+      relationshipService.setToken(loggedUser.token);
       history.push('/');
     } catch (exception) {}
   };
 
   const handleLogout = async (event) => {
     window.localStorage.removeItem('loggedTwitterUser');
-    dispatch(setUser(null));
+    dispatch(setLoggedUser(null));
     micropostService.setToken(null);
     userService.setToken(null);
     relationshipService.setToken(null);
