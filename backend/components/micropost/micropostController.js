@@ -20,7 +20,11 @@ const getMicropost = async (request, response) => {
     'user',
     { username: 1 }
   );
-  response.json(micropost.toJSON());
+  if (micropost) {
+    response.json(micropost.toJSON());
+  } else {
+    response.status(404).end();
+  }
 };
 
 const postMicropost = async (request, response) => {
@@ -33,6 +37,10 @@ const postMicropost = async (request, response) => {
 
   const body = request.body;
   const user = await User.findById(decodedToken.id);
+
+  if (!user) {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
 
   const micropost = new Micropost({
     content: body.content,
@@ -59,6 +67,11 @@ const deleteMicropost = async (request, response) => {
 
   const user = await User.findById(decodedToken.id);
   const micropostToRemove = await Micropost.findById(request.params.id);
+
+  if (!micropostToRemove) {
+    response.status(404).end();
+  }
+
   const isUserSameAsAuthor = micropostToRemove.user.toString() === user.id;
 
   if (user.admin || isUserSameAsAuthor) {
