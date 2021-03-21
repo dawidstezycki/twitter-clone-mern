@@ -19,39 +19,45 @@ const getUsers = async (request, response) => {
 };
 
 const getUser = async (request, response) => {
-  const user = await User.findById(request.params.id).populate([{
-    path: 'microposts',
-    model: 'Micropost',
-    populate: {
-      path: 'user',
-      model: 'User',
-      select: { username: 1, id: 1 },
+  const user = await User.findById(request.params.id).populate([
+    {
+      path: 'microposts',
+      model: 'Micropost',
+      populate: {
+        path: 'user',
+        model: 'User',
+        select: { username: 1, id: 1 },
+      },
     },
-  },
-  {
-    path: 'relationships',
-    model: 'Relationship',
-    populate: [
-      {
-        path: 'follower',
-        model: 'User',
-        select: { username: 1 },
-      },
-      {
-        path: 'followed',
-        model: 'User',
-        select: { username: 1 },
-      },
-    ]
+    {
+      path: 'relationships',
+      model: 'Relationship',
+      populate: [
+        {
+          path: 'follower',
+          model: 'User',
+          select: { username: 1 },
+        },
+        {
+          path: 'followed',
+          model: 'User',
+          select: { username: 1 },
+        },
+      ],
+    },
+  ]);
+  if (user) {
+    response.json(user.toJSON());
+  } else {
+    response.status(404).end();
   }
-]);
-  response.json(user.toJSON());
 };
 
 const createUser = async (request, response) => {
   const body = request.body;
 
   const saltRounds = 10;
+
   const passwordHash = await bcrypt.hash(body.password, saltRounds);
 
   const user = new User({
@@ -62,7 +68,7 @@ const createUser = async (request, response) => {
 
   const savedUser = await user.save();
 
-  response.json(savedUser);
+  response.json(savedUser.toJSON());
 };
 
 const updateUser = async (request, response) => {
@@ -77,12 +83,14 @@ const updateUser = async (request, response) => {
   const user = await User.findById(decodedToken.id);
 
   const userToUpdate = await User.findById(request.params.id);
+  if (!userToUpdate) {
+    response.status(404).end();
+  }
+
   const isUserSameAsToUpdate = userToUpdate.id.toString() === user.id;
 
   if (user.admin || isUserSameAsToUpdate) {
-    const newUserObject = {
-      relationships: body.relationships,
-    };
+    const newUserObject = {};
 
     if (body.admin != null) {
       if (user.admin) {
@@ -92,11 +100,20 @@ const updateUser = async (request, response) => {
       }
     }
 
+    if (body.username != null) {
+      newUserObject.username = body.username;
+    }
+
+    if (body.email != null) {
+      newUserObject.email = body.email;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       request.params.id,
       newUserObject,
       { new: true }
     );
+
     return response.json(updatedUser.toJSON());
   }
   return response.status(401).json({ error: 'unauthorized user' });

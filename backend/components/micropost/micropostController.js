@@ -52,7 +52,7 @@ const postMicropost = async (request, response) => {
   savedMicropost = await savedMicropost.populate('user').execPopulate();
 
   user.microposts = [...user.microposts, savedMicropost._id];
-  user.save();
+  await user.save();
 
   response.json(savedMicropost.toJSON());
 };
