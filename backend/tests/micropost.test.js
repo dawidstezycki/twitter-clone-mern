@@ -20,11 +20,6 @@ beforeEach(async () => {
     return helper.addMicropostAndAssignToUser(post, author.id);
   });
 
-  // const micropostObjects = helper.initialMicroposts.map((post, index) => {
-  //   const author = index % 2 ? userOne : userTwo;
-  //   return new Micropost({ ...post, user: author.id });
-  // });
-  // const promiseArray = micropostObjects.map((post) => post.save());
   await Promise.all(micropostCreationPromises);
 });
 
@@ -142,6 +137,7 @@ describe('POST /microposts/', () => {
     });
   });
 });
+
 describe('DELETE /microposts/:id', () => {
   test('deletes micropost sucessfully if valid id and logged in as non-admin author', async () => {
     const userNonAdmin = await helper.getUserByAdminRights(false);

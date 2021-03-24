@@ -27,10 +27,24 @@ const getRelationships = async (request, response) => {
 };
 
 const getRelationship = async (request, response) => {
-  const relationship = await Relationship.findById(
-    request.params.id
-  ).populate('follower', { username: 1 });
-  response.json(relationship.toJSON());
+  const relationship = await Relationship.findById(request.params.id).populate([
+    {
+      path: 'follower',
+      model: 'User',
+      select: { username: 1 },
+    },
+    {
+      path: 'followed',
+      model: 'User',
+      select: { username: 1 },
+    },
+  ]);
+
+  if (relationship) {
+    response.json(relationship.toJSON());
+  } else {
+    response.status(404).end();
+  }
 };
 
 const postRelationship = async (request, response) => {
@@ -44,6 +58,15 @@ const postRelationship = async (request, response) => {
   const body = request.body;
   const userFollowing = await User.findById(decodedToken.id);
   const userFollowed = await User.findById(body.followed);
+
+  if (!userFollowing)
+  {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
+  if (!userFollowed)
+  {
+    return response.status(400).json({error: 'following non-existing user'})
+  }
 
   if (decodedToken.id === body.followed) {
     return response.status(400).json({ error: "can't follow yourself" });
@@ -67,7 +90,7 @@ const postRelationship = async (request, response) => {
         path: 'followed',
         model: 'User',
         select: { username: 1 },
-      }
+      },
     ])
     .execPopulate();
 
@@ -75,12 +98,12 @@ const postRelationship = async (request, response) => {
     ...userFollowing.relationships,
     savedRelationship._id,
   ];
-  userFollowing.save();
+  await userFollowing.save();
   userFollowed.relationships = [
     ...userFollowed.relationships,
     savedRelationship._id,
   ];
-  userFollowed.save();
+  await userFollowed.save();
 
   response.json(savedRelationship.toJSON());
 };
@@ -98,22 +121,21 @@ const deleteRelationship = async (request, response) => {
   const userFollowing = await User.findById(relationshipToRemove.follower._id);
   const userFollowed = await User.findById(relationshipToRemove.followed._id);
 
-  const isUserSameAsFollower = user._id.toString() === userFollowing._id.toString();
+  const isUserSameAsFollower =
+    user._id.toString() === userFollowing._id.toString();
 
   if (user.admin || isUserSameAsFollower) {
     await Relationship.findByIdAndRemove(request.params.id);
     userFollowing.relationships = userFollowing.relationships.filter(
-      (relationship) => {
-        return relationship.toString() !== relationshipToRemove._id.toString();
-      }
+      (relationship) =>
+        relationship.toString() !== relationshipToRemove._id.toString()
     );
-    userFollowing.save();
+    await userFollowing.save();
     userFollowed.relationships = userFollowed.relationships.filter(
-      (relationship) => {
-        return relationship.toString() !== relationshipToRemove._id.toString();
-      }
+      (relationship) =>
+        relationship.toString() !== relationshipToRemove._id.toString()
     );
-    userFollowed.save();
+    await userFollowed.save();
     response.status(204).end();
   } else {
     return response.status(401).json({ error: 'unauthorized user' });

@@ -36,7 +36,7 @@ describe('GET /users', () => {
     const response = await api.get('/api/users');
     expect(response.body.length).toBe(helper.initialUsers.length);
   });
-  test('all users contain have correct username, email and microposts', async () => {
+  test('all users have correct username, email and microposts', async () => {
     const response = await api.get('/api/users');
     const usernames = response.body.map((user) => user.username);
     const email = response.body.map((user) => user.email);
@@ -68,6 +68,7 @@ describe('GET /users/:id', () => {
     expect(userReturned.body.username).toEqual(validUser.username);
     expect(userReturned.body.email).toEqual(validUser.email);
     expect(userReturned.body.admin).toEqual(validUser.admin);
+    expect(userReturned.body.id).toBe(validUser.id);
 
     const micropostsByUser = await helper.getMicropostsByUsername(validUser.username);
     expect(userReturned.body.microposts.map((post) => post.content)).toEqual(

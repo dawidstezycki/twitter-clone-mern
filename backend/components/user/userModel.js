@@ -5,6 +5,7 @@ require('mongoose-type-email');
 const userSchema = mongoose.Schema({
   username: {
     type: String,
+    required: true,
     unique: true,
     minlength: 5,
     maxlength: 50,

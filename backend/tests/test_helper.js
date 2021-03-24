@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Micropost = require('../components/micropost/micropostModel');
 const User = require('../components/user/userModel');
+const Relationship = require('../components/relationship/relationshipModel');
 
 const initialUsers = [
   {
@@ -29,6 +30,14 @@ const initialMicroposts = [
   },
 ];
 
+const initialRelationships = [
+  {
+    followerUsername: 'admin',
+    followedUsername: 'testing',
+    date: new Date(),
+  },
+];
+
 const addMicropostAndAssignToUser = async (micropost, userid) => {
   const user = await User.findById(userid);
   const micropostObject = new Micropost({ ...micropost, user: user.id });
@@ -36,6 +45,23 @@ const addMicropostAndAssignToUser = async (micropost, userid) => {
   user.microposts = [...user.microposts, savedMicropost._id];
   await user.save();
   return savedMicropost;
+};
+
+const addRelationshipAndAssignToBothUsers = async (followerId, followedId) => {
+  const follower = await User.findById(followerId);
+  const followed = await User.findById(followedId);
+  const relationshipObject = new Relationship({
+    follower,
+    followed,
+    date: new Date(),
+  });
+
+  const savedRelationship = await relationshipObject.save();
+  follower.relationships = [...follower.relationships, savedRelationship._id];
+  followed.relationships = [...followed.relationships, savedRelationship._id];
+  await follower.save();
+  await followed.save();
+  return savedRelationship;
 };
 
 const addUserFromCredentials = async (credentials) => {
@@ -76,6 +102,29 @@ const nonExistingMicropostId = async () => {
   return micropostToBeRemoved._id.toString();
 };
 
+const nonExistingRelationshipId = async () => {
+  const passwordHash = await bcrypt.hash('toberemoved', 10);
+  const followerToBeRemovedObject = new User({
+    username: 'toBeRemoved',
+    email: 'toberemoved@toberemoved.com',
+    admin: true,
+    passwordHash,
+  });
+  const followerToBeRemoved = await followerToBeRemovedObject.save();
+  const followed = await User.findOne({});
+
+  const relationshipToBeRemoved = new Relationship({
+    follower: followerToBeRemoved.id,
+    followed: followed.id,
+  });
+
+  await relationshipToBeRemoved.save();
+  await relationshipToBeRemoved.remove();
+  await followerToBeRemovedObject.remove();
+
+  return relationshipToBeRemoved._id.toString();
+};
+
 const getMicropostsInDb = async () => {
   const microposts = await Micropost.find({});
   return microposts.map((micropost) => micropost.toJSON());
@@ -83,11 +132,26 @@ const getMicropostsInDb = async () => {
 
 const getUsersInDb = async () => {
   const users = await User.find({});
-  return users.map((u) => u.toJSON());
+  return users.map((user) => user.toJSON());
+};
+
+const getRelationshipsInDb = async () => {
+  const relationships = await Relationship.find({});
+  return relationships.map((relationship) => relationship.toJSON());
 };
 
 const getUserFromDbById = async (userId) => {
   const user = await User.findById(userId);
+  return user.toJSON();
+};
+
+const getUserByUsername = async (username) => {
+  const user = await User.findOne({ username });
+  return user.toJSON();
+};
+
+const getUserByAdminRights = async (isAdmin) => {
+  const user = await User.findOne({ admin: isAdmin });
   return user.toJSON();
 };
 
@@ -100,11 +164,6 @@ const getUserTokenByUsername = async (username) => {
   return jwt.sign(userForToken, process.env.SECRET);
 };
 
-const getUserByAdminRights = async (isAdmin) => {
-  const user = await User.findOne({ admin: isAdmin });
-  return user.toJSON();
-};
-
 const getMicropostsByUsername = async (username) => {
   const user = await User.findOne({ username });
   const microposts = await Micropost.find({ user: user._id });
@@ -114,13 +173,18 @@ const getMicropostsByUsername = async (username) => {
 module.exports = {
   initialUsers,
   initialMicroposts,
+  initialRelationships,
   addMicropostAndAssignToUser,
+  addRelationshipAndAssignToBothUsers,
   addUserFromCredentials,
   nonExistingMicropostId,
   nonExistingUserId,
+  nonExistingRelationshipId,
   getMicropostsInDb,
   getUsersInDb,
+  getRelationshipsInDb,
   getUserFromDbById,
+  getUserByUsername,
   getUserTokenByUsername,
   getUserByAdminRights,
   getMicropostsByUsername,
