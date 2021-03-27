@@ -140,6 +140,12 @@ const getRelationshipsInDb = async () => {
   return relationships.map((relationship) => relationship.toJSON());
 };
 
+const getRelationshipsByFollower = async (username) => {
+  const follower = await User.findOne({ username });
+  const relationships = await Relationship.find({ follower });
+  return relationships.map((relationship) => relationship.toJSON());
+};
+
 const getUserFromDbById = async (userId) => {
   const user = await User.findById(userId);
   return user.toJSON();
@@ -183,6 +189,7 @@ module.exports = {
   getMicropostsInDb,
   getUsersInDb,
   getRelationshipsInDb,
+  getRelationshipsByFollower,
   getUserFromDbById,
   getUserByUsername,
   getUserTokenByUsername,

@@ -134,19 +134,19 @@ describe('POST /relationships/', () => {
       helper.initialRelationships.length + 1
     );
 
-    // expect(relationshipsAfterPostRequest).toEqual(
-    //   expect.arrayContaining([
-    //     expect.objectContaining({
-    //       follower: follower.id,
-    //       followed: followed.id,
-    //     }),
-    //   ])
-    // );
+    expect(relationshipsAfterPostRequest).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          follower: mongoose.Types.ObjectId(follower.id),
+          followed: mongoose.Types.ObjectId(followed.id),
+        }),
+      ])
+    );
   });
 
   test('fails with statuscode 400 if following self', async () => {
     const newRelationship = {
-      followed: follower.id
+      followed: follower.id,
     };
 
     await api
@@ -183,6 +183,121 @@ describe('POST /relationships/', () => {
       .send(newRelationship)
       .expect(401)
       .expect('Content-Type', /application\/json/);
+  });
+});
+
+describe('DELETE /relationships/:id', () => {
+  let userAdmin;
+  let userNonAdmin;
+
+  beforeEach(async () => {
+    userNonAdmin = await helper.getUserByAdminRights(false);
+    userAdmin = await helper.getUserByAdminRights(true);
+
+    await helper.addRelationshipAndAssignToBothUsers(
+      userNonAdmin.id,
+      userAdmin.id
+    );
+  });
+
+  test('deletes relationship sucessfully if valid id and logged in as non-admin follower', async () => {
+    const token = await helper.getUserTokenByUsername(userNonAdmin.username);
+
+    const relationshipsBeforeDeleteRequest = await helper.getRelationshipsInDb();
+    const relationshipsByLoggedUser = await helper.getRelationshipsByFollower(
+      userNonAdmin.username
+    );
+    const relationshipToDelete = relationshipsByLoggedUser[0];
+
+    await api
+      .delete(`/api/relationships/${relationshipToDelete.id}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(204);
+
+    const relationshipsAfterDeleteRequest = await helper.getRelationshipsInDb();
+    expect(relationshipsAfterDeleteRequest.length).toBe(
+      relationshipsBeforeDeleteRequest.length - 1
+    );
+
+    expect(relationshipsAfterDeleteRequest).not.toMatchObject({
+      follower: userNonAdmin.id,
+      followed: userAdmin.id,
+    });
+  });
+
+  test('deletes micropost sucessfully if valid id and logged in as non-follower admin', async () => {
+    const token = await helper.getUserTokenByUsername(userAdmin.username);
+
+    const relationshipsBeforeDeleteRequest = await helper.getRelationshipsInDb();
+    const relationshipsByLoggedUser = await helper.getRelationshipsByFollower(
+      userNonAdmin.username
+    );
+    const relationshipToDelete = relationshipsByLoggedUser[0];
+
+    await api
+      .delete(`/api/relationships/${relationshipToDelete.id}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(204);
+
+    const relationshipsAfterDeleteRequest = await helper.getRelationshipsInDb();
+    expect(relationshipsAfterDeleteRequest.length).toBe(
+      relationshipsBeforeDeleteRequest.length - 1
+    );
+
+    expect(relationshipsAfterDeleteRequest).not.toMatchObject({
+      follower: userNonAdmin.id,
+      followed: userAdmin.id,
+    });
+  });
+
+  test('fails with status code 401 if valid id and logged in as non-follower non-admin', async () => {
+    const token = await helper.getUserTokenByUsername(userNonAdmin.username);
+
+    const relationshipsBeforeDeleteRequest = await helper.getRelationshipsInDb();
+    const relationshipsByLoggedUser = await helper.getRelationshipsByFollower(
+      userAdmin.username
+    );
+    const relationshipToDelete = relationshipsByLoggedUser[0];
+
+    await api
+      .delete(`/api/relationships/${relationshipToDelete.id}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(401);
+
+    const relationshipsAfterDeleteRequest = await helper.getRelationshipsInDb();
+    expect(relationshipsAfterDeleteRequest.length).toBe(
+      relationshipsBeforeDeleteRequest.length
+    );
+
+    expect(relationshipsAfterDeleteRequest).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          follower: mongoose.Types.ObjectId(userAdmin.id),
+          followed: mongoose.Types.ObjectId(userNonAdmin.id),
+        }),
+      ]),
+    );
+  });
+
+  test('fails with statuscode 404 if relationship does not exist and logged in as admin', async () => {
+    const token = await helper.getUserTokenByUsername(userAdmin.username);
+    const nonExistingRelationshipId = await helper.nonExistingRelationshipId();
+
+    await api
+      .delete(`/api/relationships/${nonExistingRelationshipId}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(404);
+  });
+
+  test('fails with statuscode 400 if invalid relationship id and logged in as admin', async () => {
+    const token = await helper.getUserTokenByUsername(userAdmin.username);
+
+    const invalidId = 'asdlu12y938o2';
+
+    await api
+      .delete(`/api/relationships/${invalidId}`)
+      .set('Authorization', `bearer ${token}`)
+      .expect(400);
   });
 });
 

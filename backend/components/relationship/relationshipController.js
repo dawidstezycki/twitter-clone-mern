@@ -118,6 +118,11 @@ const deleteRelationship = async (request, response) => {
 
   const user = await User.findById(decodedToken.id);
   const relationshipToRemove = await Relationship.findById(request.params.id);
+
+  if (!relationshipToRemove) {
+    response.status(404).end();
+  }
+
   const userFollowing = await User.findById(relationshipToRemove.follower._id);
   const userFollowed = await User.findById(relationshipToRemove.followed._id);
 
