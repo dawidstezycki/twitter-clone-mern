@@ -275,7 +275,7 @@ describe('DELETE /relationships/:id', () => {
           follower: mongoose.Types.ObjectId(userAdmin.id),
           followed: mongoose.Types.ObjectId(userNonAdmin.id),
         }),
-      ]),
+      ])
     );
   });
 
