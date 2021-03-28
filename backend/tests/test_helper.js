@@ -21,10 +21,12 @@ const initialUsers = [
 
 const initialMicroposts = [
   {
+    username: 'testing',
     content: 'Going for the walk with the dog',
     date: new Date(),
   },
   {
+    username: 'admin',
     content: 'I need to do some grocery shopping',
     date: new Date(),
   },
@@ -34,6 +36,11 @@ const initialRelationships = [
   {
     followerUsername: 'admin',
     followedUsername: 'testing',
+    date: new Date(),
+  },
+  {
+    followerUsername: 'testing',
+    followedUsername: 'admin',
     date: new Date(),
   },
 ];

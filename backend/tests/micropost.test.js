@@ -12,13 +12,18 @@ beforeEach(async () => {
   await Micropost.deleteMany({});
   await User.deleteMany({});
 
-  const userOne = await helper.addUserFromCredentials(helper.initialUsers[0]);
-  const userTwo = await helper.addUserFromCredentials(helper.initialUsers[1]);
+  const userCreationPromises = helper.initialUsers.map(
+    async (userCredentials) => helper.addUserFromCredentials(userCredentials)
+  );
 
-  const micropostCreationPromises = helper.initialMicroposts.map(async (post, index) => {
-    const author = index % 2 ? userOne : userTwo;
-    return helper.addMicropostAndAssignToUser(post, author.id);
-  });
+  await Promise.all(userCreationPromises);
+
+  const micropostCreationPromises = helper.initialMicroposts.map(
+    async (post) => {
+      const author = await helper.getUserByUsername(post.username);
+      return helper.addMicropostAndAssignToUser(post, author.id);
+    }
+  );
 
   await Promise.all(micropostCreationPromises);
 });
@@ -139,8 +144,15 @@ describe('POST /microposts/', () => {
 });
 
 describe('DELETE /microposts/:id', () => {
+  let userNonAdmin;
+  let userAdmin;
+
+  beforeEach(async () => {
+    userNonAdmin = await helper.getUserByAdminRights(false);
+    userAdmin = await helper.getUserByAdminRights(true);
+  });
+
   test('deletes micropost sucessfully if valid id and logged in as non-admin author', async () => {
-    const userNonAdmin = await helper.getUserByAdminRights(false);
     const token = await helper.getUserTokenByUsername(userNonAdmin.username);
 
     const micropostsBeforeDeleteRequest = await helper.getMicropostsInDb();
@@ -165,9 +177,6 @@ describe('DELETE /microposts/:id', () => {
   });
 
   test('deletes micropost sucessfully if valid id and logged in as non-author admin', async () => {
-    const userNonAdmin = await helper.getUserByAdminRights(false);
-    const userAdmin = await helper.getUserByAdminRights(true);
-
     const token = await helper.getUserTokenByUsername(userAdmin.username);
 
     const micropostsBeforeDeleteRequest = await helper.getMicropostsInDb();
@@ -192,9 +201,6 @@ describe('DELETE /microposts/:id', () => {
   });
 
   test('fails with status code 401 if valid id and logged in as non-author non-admin', async () => {
-    const userNonAdmin = await helper.getUserByAdminRights(false);
-    const userAdmin = await helper.getUserByAdminRights(true);
-
     const token = await helper.getUserTokenByUsername(userNonAdmin.username);
 
     const micropostsByLoggedUser = await helper.getMicropostsByUsername(
@@ -209,7 +215,6 @@ describe('DELETE /microposts/:id', () => {
   });
 
   test('fails with statuscode 404 if micropost does not exist and logged in as admin', async () => {
-    const userAdmin = await helper.getUserByAdminRights(true);
     const token = await helper.getUserTokenByUsername(userAdmin.username);
     const nonExistingMicropostId = await helper.nonExistingMicropostId();
 
@@ -220,9 +225,7 @@ describe('DELETE /microposts/:id', () => {
   });
 
   test('fails with statuscode 400 if invalid micropost id and logged in as admin', async () => {
-    const userAdmin = await helper.getUserByAdminRights(true);
     const token = await helper.getUserTokenByUsername(userAdmin.username);
-
     const invalidId = 'asdlu12y938o2';
 
     await api

@@ -12,12 +12,15 @@ beforeEach(async () => {
   await Micropost.deleteMany({});
   await User.deleteMany({});
 
-  const userOne = await helper.addUserFromCredentials(helper.initialUsers[0]);
-  const userTwo = await helper.addUserFromCredentials(helper.initialUsers[1]);
+  const userCreationPromises = helper.initialUsers.map(
+    async (userCredentials) => helper.addUserFromCredentials(userCredentials)
+  );
+
+  await Promise.all(userCreationPromises);
 
   const micropostCreationPromises = helper.initialMicroposts.map(
-    async (post, index) => {
-      const author = index % 2 ? userOne : userTwo;
+    async (post) => {
+      const author = await helper.getUserByUsername(post.username);
       return helper.addMicropostAndAssignToUser(post, author.id);
     }
   );
@@ -70,7 +73,9 @@ describe('GET /users/:id', () => {
     expect(userReturned.body.admin).toEqual(validUser.admin);
     expect(userReturned.body.id).toBe(validUser.id);
 
-    const micropostsByUser = await helper.getMicropostsByUsername(validUser.username);
+    const micropostsByUser = await helper.getMicropostsByUsername(
+      validUser.username
+    );
     expect(userReturned.body.microposts.map((post) => post.content)).toEqual(
       micropostsByUser.map((post) => post.content)
     );

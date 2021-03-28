@@ -20,14 +20,16 @@ beforeEach(async () => {
 
   await Promise.all(userCreationPromises);
 
-  const follower = await helper.getUserByUsername(
-    helper.initialRelationships[0].followerUsername
-  );
-  const followed = await helper.getUserByUsername(
-    helper.initialRelationships[0].followedUsername
-  );
+  for (const relationship of helper.initialRelationships) {
+    const follower = await helper.getUserByUsername(
+      relationship.followerUsername
+    );
+    const followed = await helper.getUserByUsername(
+      relationship.followedUsername
+    );
 
-  await helper.addRelationshipAndAssignToBothUsers(follower.id, followed.id);
+    await helper.addRelationshipAndAssignToBothUsers(follower.id, followed.id);
+  }
 });
 
 describe('GET /relationships', () => {
@@ -193,11 +195,6 @@ describe('DELETE /relationships/:id', () => {
   beforeEach(async () => {
     userNonAdmin = await helper.getUserByAdminRights(false);
     userAdmin = await helper.getUserByAdminRights(true);
-
-    await helper.addRelationshipAndAssignToBothUsers(
-      userNonAdmin.id,
-      userAdmin.id
-    );
   });
 
   test('deletes relationship sucessfully if valid id and logged in as non-admin follower', async () => {
